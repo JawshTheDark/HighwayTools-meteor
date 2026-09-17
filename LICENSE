@@ -1,0 +1,22 @@
+HighwayTools for Meteor Client
+==============================
+
+This project is a port of HighwayTools by Constructor (Avanatiker),
+originally published for the Lambda client at
+https://github.com/lambda-plugins/HighwayTools
+
+The original work is distributed under the following terms, which apply
+to this port in full:
+
+  Copyright (c) 2019-2022 Constructor#9948 alias Avanatiker. All Rights
+  Reserved. Permission to use, copy, modify, and distribute this software
+  and its documentation for educational, research, and not-for-profit
+  purposes, without fee and without a signed licensing agreement, is
+  hereby granted, provided that the above copyright notice, this
+  paragraph appears in all copies, modifications, and distributions.
+
+  By downloading this software you agree to be bound by the terms of
+  service.
+
+Port to Meteor Client 26.2 (Java) by Jawsh, 2026. The port and its
+additions are released under the same terms as the original.
