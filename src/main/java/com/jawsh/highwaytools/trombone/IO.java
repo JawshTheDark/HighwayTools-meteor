@@ -49,16 +49,32 @@ public class IO {
         ChatUtils.sendMsg(Component.literal(message));
     }
 
-    public static boolean pauseCheck() {
+    public static volatile String pauseReason = null;
+
+    /** Why the bot is currently paused, or null when it may run. */
+    public static String findPauseReason() {
         HighwayTools m = m();
-        return !Pathfinder.rubberbandTimer.tick(m.rubberbandTimeout.get(), false)
-            || mc.player.getInventory().isEmpty()
-            || isLagging()
-            || isEating()
-            || mc.player.getFoodData().getFoodLevel() < m.minHunger.get()
-            || isInQueue()
-            || !mc.player.isAlive()
-            || !mc.player.onGround();
+        if (!Pathfinder.rubberbandTimer.tick(m.rubberbandTimeout.get(), false)) return "Rubberband timeout";
+        if (mc.player.getInventory().isEmpty()) return "Empty inventory";
+        if (isLagging()) return "Server lag";
+        if (isEating()) return "Eating";
+        int food = mc.player.getFoodData().getFoodLevel();
+        if (food < m.minHunger.get()) return "Hungry (" + food + " < " + m.minHunger.get() + ")";
+        if (isInQueue()) return "In queue";
+        if (!mc.player.isAlive()) return "Dead";
+        if (!mc.player.onGround()) return "Not on ground";
+        return null;
+    }
+
+    public static boolean pauseCheck() {
+        String reason = findPauseReason();
+        if (!java.util.Objects.equals(reason, pauseReason)) {
+            pauseReason = reason;
+            if (m().debugLevel.get() != DebugLevel.OFF) {
+                msg(reason != null ? "Paused: §7" + reason : "Resumed.");
+            }
+        }
+        return reason != null;
     }
 
     private static boolean isLagging() {

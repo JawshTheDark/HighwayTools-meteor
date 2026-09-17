@@ -191,6 +191,7 @@ public class Statistics {
             out.add(Line.of("Delays:", "Place(" + m.placeDelay.get() + ") Break(" + m.breakDelay.get() + ")"));
         }
         out.add(Line.of("Movement:", Pathfinder.moveState.name()));
+        if (IO.pauseReason != null) out.add(Line.of("Paused:", IO.pauseReason));
         out.add(Line.of("Pathing:", BaritoneBridge.available() ? "Baritone" : "Fallback"));
     }
 

@@ -99,7 +99,7 @@ public class HighwayTools extends Module {
     public final Setting<Double> moveSpeed = sgBehavior.add(new DoubleSetting.Builder()
         .name("packet-move-speed").description("Maximum player velocity per tick while bridging.").defaultValue(0.2).range(0.0, 1.0).sliderRange(0.0, 1.0).build());
     public final Setting<Double> lagPause = sgBehavior.add(new DoubleSetting.Builder()
-        .name("lag-pause").description("Pause when the server has not ticked for this many seconds (0 to disable).").defaultValue(1.0).range(0.0, 10.0).sliderRange(0.0, 10.0).build());
+        .name("lag-pause").description("Pause when no server time update arrived for this many seconds (0 to disable). Values below 2 pause constantly on slow servers.").defaultValue(0.0).range(0.0, 10.0).sliderRange(0.0, 10.0).build());
     public final Setting<Integer> minHunger = sgBehavior.add(new IntSetting.Builder()
         .name("min-hunger").description("Pause while the hunger bar is below this value so AutoEat can eat. Disables only when no food is left.").defaultValue(7).range(0, 20).sliderRange(0, 20).build());
     public final Setting<Boolean> noSprint = sgBehavior.add(new BoolSetting.Builder()
@@ -276,6 +276,7 @@ public class HighwayTools extends Module {
 
     @Override
     public String getInfoString() {
+        if (IO.pauseReason != null) return "Paused: " + IO.pauseReason;
         BlockTask task = ContainerHandler.containerTask.taskState != TaskState.DONE
             ? ContainerHandler.containerTask
             : TaskManager.lastTask;
