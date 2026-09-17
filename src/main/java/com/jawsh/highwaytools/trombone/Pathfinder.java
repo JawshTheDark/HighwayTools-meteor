@@ -184,13 +184,16 @@ public class Pathfinder {
     }
 
     private static boolean isTaskDone(BlockPos pos) {
-        BlockTask task = TaskManager.tasks.get(pos);
-        if (task == null) return false;
         Block block = WorldUtils.state(pos).getBlock();
-        return task.taskState == TaskState.DONE
-            && block != Blocks.NETHER_PORTAL
-            && block != Blocks.END_PORTAL
-            && !WorldUtils.isLiquid(pos);
+        if (block == Blocks.NETHER_PORTAL || block == Blocks.END_PORTAL || WorldUtils.isLiquid(pos)) return false;
+
+        BlockTask task = TaskManager.tasks.get(pos);
+        if (task == null) {
+            // Not part of the blueprint (e.g. Clear Space off): nothing to do here as long as we can pass through.
+            return !com.jawsh.highwaytools.trombone.blueprint.BlueprintGenerator.isInsideBlueprint(pos)
+                && (pos.getY() < currentBlockPos.getY() || !WorldUtils.hasCollision(pos));
+        }
+        return task.taskState == TaskState.DONE;
     }
 
     public static boolean shouldBridge() {
