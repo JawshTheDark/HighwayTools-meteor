@@ -27,7 +27,6 @@ public class Pathfinder {
     public static Direction8 startingDirection = Direction8.NORTH;
     public static BlockPos currentBlockPos = new BlockPos(0, -1, 0);
     public static BlockPos startingBlockPos = new BlockPos(0, -1, 0);
-    private static final BlockPos targetBlockPos = new BlockPos(0, -1, 0);
     public static int distancePending = 0;
     private static BlockPos lastCommandPos = new BlockPos(0, -1, 0);
 
@@ -81,9 +80,8 @@ public class Pathfinder {
                 setSneak(false);
                 goal = currentBlockPos;
 
-                if (WorldUtils.distanceTo(currentBlockPos, targetBlockPos) < 2
-                    || (distancePending > 0
-                    && WorldUtils.distanceTo(startingDirection.offset(startingBlockPos, distancePending), currentBlockPos) == 0.0)) {
+                if (distancePending > 0
+                    && WorldUtils.distanceTo(startingDirection.offset(startingBlockPos, distancePending), currentBlockPos) == 0.0) {
                     IO.disableError("Reached target destination");
                     return;
                 }

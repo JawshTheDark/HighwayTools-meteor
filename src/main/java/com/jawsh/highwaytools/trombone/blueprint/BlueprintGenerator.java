@@ -178,7 +178,8 @@ public class BlueprintGenerator {
     private static boolean isRail(int w) {
         HighwayTools m = m();
         int width = m.width.get();
-        return m.railing.get() && !(w >= 1 && w < width - 1);
+        // Rails need at least one floor column between them; narrower highways are floor only.
+        return m.railing.get() && width > 2 && (w == 0 || w == width - 1);
     }
 
     private static void generateFlat(BlockPos basePos) {
