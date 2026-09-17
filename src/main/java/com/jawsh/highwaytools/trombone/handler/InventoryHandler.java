@@ -138,7 +138,7 @@ public class InventoryHandler {
 
     public static boolean swapOrMoveBestTool(BlockTask blockTask) {
         HighwayTools m = m();
-        if (InvHelper.countItem(m.tool.get()) <= m.saveTools.get()) {
+        if (InvHelper.countItem(stack -> stack.is(net.minecraft.tags.ItemTags.PICKAXES)) <= m.saveTools.get()) {
             if (ContainerHandler.containerTask.taskState == TaskState.DONE && m.storageManagement.get()) {
                 ContainerHandler.handleRestock(m.tool.get());
                 return false;
