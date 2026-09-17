@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "highwaytools",
+  "version": "${version}",
+  "name": "HighwayTools",
+  "description": "Fully automated highway building, ported from the Lambda HighwayTools plugin.",
+  "authors": [ "Constructor (original)", "Jawsh (Meteor port)" ],
+  "contact": {
+    "sources": "https://github.com/lambda-plugins/HighwayTools"
+  },
+  "environment": "client",
+  "entrypoints": {
+    "meteor": [
+      "com.jawsh.highwaytools.HighwayToolsAddon"
+    ]
+  },
+  "custom": {
+    "meteor-client:color": "35,188,254",
+    "modmenu": {
+      "parent": {
+        "id": "meteor-client"
+      }
+    }
+  },
+  "depends": {
+    "java": ">=${jdk_version}",
+    "minecraft": "${minecraft_version}",
+    "meteor-client": "*"
+  }
+}
