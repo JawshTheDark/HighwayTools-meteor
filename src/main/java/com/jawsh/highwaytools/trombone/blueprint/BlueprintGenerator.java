@@ -92,6 +92,15 @@ public class BlueprintGenerator {
                 }
             }
         }
+
+        // Narrow highways get their rails outside the walkway; clear the space above those rails too.
+        if (outerRails()) {
+            for (int x : outerRailOffsets()) {
+                for (int h = 1; h < height; h++) {
+                    blueprint.put(xDirection.offset(basePos, x).above(h), new BlueprintTask(Blocks.AIR));
+                }
+            }
+        }
     }
 
     private static void generateBase(BlockPos basePos, Direction8 xDirection) {
@@ -104,17 +113,41 @@ public class BlueprintGenerator {
             BlockPos pos = xDirection.offset(basePos, x);
 
             if (m.mode.get() == Trombone.Structure.HIGHWAY && isRail(w)) {
-                if (!m.cornerBlock.get() && width > 2 && Pathfinder.startingDirection.isDiagonal()) {
-                    blueprint.put(pos, new BlueprintTask(m.fillerMat.get(), false, true));
-                }
-                int startHeight = (m.cornerBlock.get() && width > 2) ? 0 : 1;
-                for (int y = startHeight; y <= m.railingHeight.get(); y++) {
-                    blueprint.put(pos.above(y), new BlueprintTask(material));
-                }
+                generateRailColumn(pos, width > 2);
             } else {
                 blueprint.put(pos, new BlueprintTask(material));
             }
         }
+
+        if (outerRails()) {
+            for (int x : outerRailOffsets()) {
+                generateRailColumn(xDirection.offset(basePos, x), true);
+            }
+        }
+    }
+
+    /** Rail column: optional corner/support block at floor level, then material up to the railing height. */
+    private static void generateRailColumn(BlockPos pos, boolean allowCorner) {
+        HighwayTools m = m();
+        boolean corner = m.cornerBlock.get() && allowCorner;
+        if (!corner && allowCorner && Pathfinder.startingDirection.isDiagonal()) {
+            blueprint.put(pos, new BlueprintTask(m.fillerMat.get(), false, true));
+        }
+        int startHeight = corner ? 0 : 1;
+        for (int y = startHeight; y <= m.railingHeight.get(); y++) {
+            blueprint.put(pos.above(y), new BlueprintTask(m.material.get()));
+        }
+    }
+
+    /** Widths below 3 cannot fit rails inside the walkway, so the rails go on both sides of it. */
+    private static boolean outerRails() {
+        HighwayTools m = m();
+        return m.railing.get() && m.width.get() < 3 && m.mode.get() == Trombone.Structure.HIGHWAY;
+    }
+
+    private static int[] outerRailOffsets() {
+        int width = m().width.get();
+        return new int[]{-1 - width / 2, width - width / 2};
     }
 
     private static void generateFloor(BlockPos basePos, Direction8 xDirection) {
