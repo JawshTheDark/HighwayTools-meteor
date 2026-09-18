@@ -93,14 +93,6 @@ public class BlueprintGenerator {
             }
         }
 
-        // Narrow highways get their rails outside the walkway; clear the space above those rails too.
-        if (outerRails()) {
-            for (int x : outerRailOffsets()) {
-                for (int h = 1; h < height; h++) {
-                    blueprint.put(xDirection.offset(basePos, x).above(h), new BlueprintTask(Blocks.AIR));
-                }
-            }
-        }
     }
 
     private static void generateBase(BlockPos basePos, Direction8 xDirection) {
@@ -113,7 +105,7 @@ public class BlueprintGenerator {
             BlockPos pos = xDirection.offset(basePos, x);
 
             if (m.mode.get() == Trombone.Structure.HIGHWAY && isRail(w)) {
-                generateRailColumn(pos, width > 2);
+                generateRailColumn(pos, width > 2, false);
             } else {
                 blueprint.put(pos, new BlueprintTask(material));
             }
@@ -121,13 +113,16 @@ public class BlueprintGenerator {
 
         if (outerRails()) {
             for (int x : outerRailOffsets()) {
-                generateRailColumn(xDirection.offset(basePos, x), true);
+                generateRailColumn(xDirection.offset(basePos, x), true, true);
             }
         }
     }
 
-    /** Rail column: optional corner/support block at floor level, then material up to the railing height. */
-    private static void generateRailColumn(BlockPos pos, boolean allowCorner) {
+    /**
+     * Rail column: optional corner/support block at floor level, then material up to the railing height.
+     * {@code fillOnly} rails (outside a narrow walkway) only fill gaps: existing solid blocks such as tunnel walls are kept.
+     */
+    private static void generateRailColumn(BlockPos pos, boolean allowCorner, boolean fillOnly) {
         HighwayTools m = m();
         boolean corner = m.cornerBlock.get() && allowCorner;
         if (!corner && allowCorner && Pathfinder.startingDirection.isDiagonal()) {
@@ -135,7 +130,7 @@ public class BlueprintGenerator {
         }
         int startHeight = corner ? 0 : 1;
         for (int y = startHeight; y <= m.railingHeight.get(); y++) {
-            blueprint.put(pos.above(y), new BlueprintTask(m.material.get()));
+            blueprint.put(pos.above(y), new BlueprintTask(m.material.get(), fillOnly, false));
         }
     }
 
